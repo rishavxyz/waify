@@ -4,11 +4,14 @@ type Props = {
   src: string;
   width?: number;
   height?: number;
+  blur_nsfw?: boolean;
 }
 
 const lazy_image_loading: Action<
   HTMLElement, Props, {
-    'on:image_loaded': (event: { target: HTMLElement }) => void 
+    'on:image_loaded': (event: {
+      detail: HTMLImageElement, target: HTMLElement
+    }) => void 
   }
 > = (node, props) => {
   const img_url = props.src
@@ -29,7 +32,8 @@ const lazy_image_loading: Action<
       }
       img.src = img_url
       img.addEventListener('load', image_loaded)
-    }
+      return
+    } else return // more safety
   })
   observer.observe(node)
 

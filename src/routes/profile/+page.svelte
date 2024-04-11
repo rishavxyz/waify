@@ -5,9 +5,22 @@
 
     export let data:PageServerData
 
-    $: limit_value = data.settings.post_limit ?? 20
-    const nsfw = false
-    const gifs = false
+    $: limit_value = data.settings.post_limit
+    
+    $: switches = [
+        { title: 'Enable NSFW'
+        , desc: `Enabling this you are confirming that you are over 18 years old. May contain aggressive or abusing content.`
+        , input: { name: 'enable-nsfw', on: data.settings.is_nsfw_enabled }
+        },
+        { title: 'Blur NSFW images'
+        , desc: `Blur all NSFW tagged images only on the feed. Vsible on other pages.`
+        , input: { name: 'blur-nsfw', on: data.settings.is_blur_nsfw_enabled }
+        },
+        { title: 'Enable GIFs'
+        , desc: `You will see GIFs more often along with images.`
+        , input: { name: 'enable-gifs', on: data.settings.is_gifs_enabled }
+        },
+    ]
 </script>
 
 <section class="space-y-5">
@@ -46,33 +59,20 @@
         <p class="font-semibold">Settings</p>
     </div>
 
-    <form action="?/update" method="post" class="space-y-5 form-control"
-        use:enhance
+    <form action="?/update" method="post"
+        class="space-y-5 form-control" use:enhance
     >
-        <!-- nsfw -->
-        <label class="label gap-x-4 cursor-pointer">
-            <div class="max-w-64 space-y-2 text-balance">
-                <p class="font-semibold">Enable NSFW</p>
-                <p class="text-xs opacity-75">
-                    Enabling this you are confirming you are over 18 years old.
-                </p>
-            </div> 
-            <input type="checkbox" class="toggle" name="enable-nsfw"
-                checked={data.settings.is_nsfw_enabled}
-            />
-        </label>
-        <!-- gifs -->
-        <label class="label gapx-x-4 cursor-pointer">
-            <div class="max-w-64 space-y-2 text-balance">
-                <p class="font-semibold">Force show GIFs</p>
-                <p class="text-xs opacity-75">
-                    Show GIFs more often along with images.
-                </p>
-            </div> 
-            <input type="checkbox" class="toggle" name="enable-gifs"
-                checked={data.settings.is_gifs_enabled}
-            />
-        </label>
+        {#each switches as { title, desc, input }, i (i)}
+            <label class="label gap-x-4 cursor-pointer">
+                <div class="w-64 lg:max-w-sm space-y-2 text-balance">
+                    <p class="font-semibold">{title}</p>
+                    <p class="text-sm opacity-75">{desc}</p>
+                </div> 
+                <input type="checkbox" class="toggle"
+                    name={input.name} checked={input.on}
+                />
+            </label>
+        {/each}
         <!-- post limit -->
         <label>
             <p class="mb-3 font-semibold">Maximum post limit</p>
@@ -92,6 +92,6 @@
             </div>
         </label>
 
-        <button class="w-full btn">Save changes</button>
+        <button class="w-full btn btn-primary">Save changes</button>
     </form>
 </section>
