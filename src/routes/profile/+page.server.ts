@@ -28,6 +28,8 @@ export const actions: Actions = {
     {
       path: '/', expires: new Date('2050')
     })
+
+    return { success: true }
   }
 }
 

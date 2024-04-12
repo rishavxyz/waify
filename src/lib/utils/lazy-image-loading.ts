@@ -7,7 +7,7 @@ type Props = {
   blur_nsfw?: boolean;
 }
 
-const lazy_image_loading: Action<
+export const lazy_image_loading: Action<
   HTMLElement, Props, {
     'on:image_loaded': (event: {
       detail: HTMLImageElement, target: HTMLElement
@@ -43,5 +43,3 @@ const lazy_image_loading: Action<
     }
   }
 }
-
-export default lazy_image_loading

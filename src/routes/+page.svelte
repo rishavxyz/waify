@@ -1,24 +1,9 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { backOut } from 'svelte/easing';
-	import { fade, fly, scale } from 'svelte/transition';
-
-	import Icon from '$lib/components/icon.svelte';
-	import lazy_image_loading from '$lib/utils/lazy-image-loading'
+	import ButtonLike from '$lib/components/btn-like.svelte'
+	import { lazy_image_loading } from '$lib/utils/lazy-image-loading'
 
 	export let data
 </script>
-
-{#snippet like_btn(liked, likes, icon_anim, y)}
-	{@const options = { easing: backOut, duration: 500 }}
-
-	<button class="text-lg flex gap-x-2">
-		<span class="text-base" in:fly={{ y, ...options }}>{likes}</span>
-		<span in:icon_anim={options}>
-			<Icon icon="heart" fill={liked} />
-		</span>
-	</button>
-{/snippet}
 
 {#snippet post(image)}
 	{@const params = new URLSearchParams(
@@ -30,10 +15,15 @@
 		, tags: JSON.stringify(image.tags)
 		, background_color: image.dominant_color
 		, extension: image.extension
+		, height: image.height
+		, width: image.width
+		, is_nsfw: image.is_nsfw
+		, likes: image.favorites
+		, byte_size: image.byte_size
 		}).toString()
 	}
-	{@const is_liked_post = data.liked_posts.includes(image.image_id)}
-	{@const likes = is_liked_post ? image.favorites + 1 : image.favorites}
+	{@const is_liked = data.liked_posts.includes(image.image_id)}
+	{@const likes = is_liked ? image.favorites + 1 : image.favorites}
 
 	<a href="/view?{params}">
 		<figure class="h-52 lg:h-80" style:background-color={image.dominant_color}
@@ -50,15 +40,7 @@
 		/>
 	</a>
 
-	<form action="?/likePost&id={image.image_id}" 
-		method="post" class="mt-2 ms-auto" use:enhance
-	>
-		{#if is_liked_post}
-			{@render like_btn(true, likes, scale, 10)}
-		{:else}
-			{@render like_btn(false, likes, fade, -10)}
-		{/if}
-	</form>
+	<ButtonLike id={image.image_id} {is_liked} {likes} />
 {/snippet}
 
 <section class="columns-2 lg:columns-3 [&>article]:break-inside-avoid">

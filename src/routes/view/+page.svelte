@@ -1,98 +1,128 @@
 <script lang="ts">
-	import Icon from '$lib/components/icon.svelte';
+  import { click_to_download } from '$lib/utils/click-to-download';
 	import { delay } from '$lib/utils/delay';
 	import type { PageData } from './$types';
+  import { pretty_size } from '$lib/utils/pretty-size';
+	import Icon from '$lib/components/icon.svelte';
+  import ButtonLike from '$lib/components/btn-like.svelte';
 
   export let data: PageData
 
-  const { metadata } = data
+  const { post } = data
 
   let loading = false
   let downloaded: 'no' | 'yes' | 'failed' = 'no'
+
+	$: is_liked = data.liked_posts.includes(+post.id)
+	$: likes = is_liked ? +post.likes + 1 : +post.likes
 </script>
 
 {#snippet social_link(url, name)}
+  {@const icon = name.toLowerCase()}
+
   <a href={url} target="_blank"
     rel="noopener noreferrer"
-    class="btn btn-xs btn-neutral capitalize"
+    class="text-2xl"
   >
-    {name}
+    <Icon iconSet="simple-icons" {icon} />
   </a>
 {/snippet}
 
 <figure class="-m-4 lg:m-0">
-  <img src={metadata.url} alt="a beautiful waifu" />
+  <img src={post.url} alt="a beautiful waifu" />
 </figure>
 
-<section class="mt-12 relative bg-base-200 p-4 rounded-box">
-  <!-- artist -->
-  <div class="space-y-1">
-    <p class="text-xl">By {metadata.artist?.name ?? 'annonymous'}</p>
-    <p class="text-sm opacity-75">On {metadata.date}</p>
+<section class="relative mt-12 space-y-5 bg-base-100 p-4 rounded-box">
+  <!-- like btn -->
+  <ButtonLike class="btn btn-accent !text-2xl
+    flex-row-reverse absolute -top-4 right-0 shadow"
+    id={post.id} {is_liked} {likes}
+  />
 
-    {#if metadata.artist}
-      <p class="!mt-5">Follow atrist on</p>
-      <div>
-        {#if metadata.artist.patreon}
-          {@render social_link(metadata.artist.patreon, 'patreon')}
-        {:else if metadata.artist.pixiv}
-          {@render social_link(metadata.artist.pixiv, 'pixIV')}
-        {:else if metadata.artist.twitter}
-          {@render social_link(metadata.artist.twitter, 'twitter')}
-        {:else if metadata.artist.deviant_art}
-          {@render social_link(metadata.artist.deviant_art, 'deviant art')}
+  <!-- artist -->
+  <div class="flex flex-wrap items-end justify-between gap-5">
+    <div class="flex-grow">
+      <p class="text-xl">By {post.artist?.name ?? 'annonymous'}</p>
+      <p class="mt-1 text-sm opacity-75">{post.date}</p>
+    </div>
+
+    {#if post.artist}
+      <div class="flex gap-3 flex-wrap">
+        {#if post.artist.patreon}
+          {@render social_link(post.artist.patreon, 'Patreon')}
+        {:else if post.artist.pixiv}
+          {@render social_link(post.artist.pixiv, 'PixIV')}
+        {:else if post.artist.twitter}
+          {@render social_link(post.artist.twitter, 'Twitter')}
+        {:else if post.artist.deviant_art}
+          {@render social_link(post.artist.deviant_art, 'DeviantArt')}
         {/if}
       </div>
     {/if}
   </div>
 
+  <!-- source -->
+  <p>
+    <!-- Original post&colon; -->
+    <a href={post.source} target="_blank"
+      rel="noopener noreferrer" class="capitalize link link-accent">
+      <!-- {post.source.replace(/http.?\:\/\/|www\.|\..*/ig, '')} -->
+      See original post
+    </a>
+  </p>
+
   <!-- tags -->
-  <p class="mt-5">Tags</p>
-  <div class="mt-2 space-x-2">
-    {#each metadata.tags as tag, i}
-      {#if i > 0}&comma;{/if}
-      <a href="/" class="link">#{tag.name}</a>
+  <div class="space-x-3">
+    {#each post.tags as tag}
+      <a href="/" class="link no-underline">#{tag.name}</a>
     {/each}
   </div>
 
-  <button class="btn btn-square text-2xl absolute -top-4 right-0"
-    class:btn-primary={downloaded == 'no'}
-    class:btn-success={downloaded == 'yes'}
-    class:btn-error={downloaded == 'failed'}
-    aria-label="Download image"
-    on:click={() => {
-      loading = true
-      fetch(metadata.url)
-      .then(res => res.blob())
-      .then(async blob => {
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = 'waify-'.concat(
-          metadata.id, metadata.extension
-        )
-        document.body.appendChild(a)
-        await delay(2000)
-        a.click()
-        document.body.removeChild(a)
-        downloaded = 'yes'
-      })
-      .catch(()=> {
-        alert('Something went wrong')
-        downloaded = 'failed'
-      })
-      .finally(async ()=> {
-        loading = false
-        await delay(5000)
+  <!-- stats -->
+  <div class="flex flex-wrap items-center gap-4 divide-x divide-neutral/25">
+    <div>
+      <p class="text-sm opacity-75">Resolution</p>
+      <p>{post.width}x{post.height}</p>
+    </div>
+    <div class="ps-5">
+      <p class="text-sm opacity-75">Size</p>
+      <p>{pretty_size(post.byte_size)}</p>
+    </div>
+    <button class="btn btn-circle text-2xl ms-auto"
+      class:btn-primary={downloaded == 'no'}
+      class:btn-success={downloaded == 'yes'}
+      class:btn-error={downloaded == 'failed'}
+      aria-label="Download image"
+      use:click_to_download={
+        { extension: post.extension
+        , id: post.id
+        , url: post.url
+        }
+      }
+      on:start={async () => {
         downloaded = 'no'
-      })
-    }}
-  >{#if loading}
-      <span class="loading loading-spinner" />
-    {:else if downloaded == 'yes'}
-      <Icon icon="check-circle-1" />
-    {:else}
-      <Icon icon="upload" />
-    {/if}
-  </button>
+        loading = true
+      }}
+      on:error={() => {
+        downloaded = 'failed'
+        alert(
+          'Something went wrong\nCannot download at the moment'
+        )
+      }}
+      on:end={async () => {
+        loading = false
+        downloaded = 'yes'
+        await delay(8000)
+        downloaded = 'no'
+      }}
+    >{#if loading}
+        <span class="loading loading-spinner" />
+      {:else if downloaded == 'yes'}
+        <Icon icon="check-circle-1" />
+      {:else}
+        <Icon icon="upload" />
+      {/if}
+    </button>
+  </div>
+
 </section>

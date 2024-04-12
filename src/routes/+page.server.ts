@@ -1,6 +1,8 @@
 import { type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
+import type { Post } from "$lib/types";
+
 import waifus from '$lib/data.json'
 
 export const actions: Actions = {
@@ -55,15 +57,16 @@ export const load: PageServerLoad = async ({
   )
   const cookie_blur_nsfw = cookies.get('blur-nsfw')
   const cookie_nsfw = cookies.get('enable-nsfw')
-  const cookie_gifs = cookies.get('enable-gifs')
 
   const is_nsfw_enabled = cookie_nsfw == 'on' ? true : false
   const is_blur_nsfw_enabled = cookie_blur_nsfw == 'on' ? true : false
 
-  const posts = waifus.images.slice(
+  const posts = waifus.images
+  .filter(
+    post => is_nsfw_enabled ? post : !post.is_nsfw
+  )
+  .slice(
     0, +(cookies.get('post-limit') ?? 20)
-  ).filter(
-    post => is_nsfw_enabled ? true : !post.is_nsfw
   )
 
   return {
