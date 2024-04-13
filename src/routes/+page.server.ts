@@ -4,6 +4,15 @@ import type { PageServerLoad } from "./$types";
 import type { Post } from "$lib/types";
 
 import waifus from '$lib/data.json'
+import { api_url } from "$lib";
+import { from_now } from "$lib/utils/from-now";
+
+type ReturnType =  {
+  is_blur_nsfw_enabled: boolean,
+  liked_posts: number[],
+  cache: 'hit'|'miss',
+  posts?: Post[],
+}
 
 export const actions: Actions = {
   async likePost({ cookies, url }) {
@@ -28,50 +37,53 @@ export const actions: Actions = {
 }
 
 export const load: PageServerLoad = async ({
-  fetch, setHeaders, cookies
+  parent, cookies, fetch
 }) => {
-  // const cookie_nsfw = cookies.get('enable-nsfw')
-  // const cookie_gifs = cookies.get('enable-gifs')
-  // const limit = cookies.get('post-limit') ?? '20'
 
-  // const is_nsfw_enabled = cookie_nsfw == 'on' ? 'true' : 'false'
-  // const is_gifs_enabled = cookie_gifs == 'on' ? 'true' : 'false'
+  const options = await parent()
+  
+  const is_nsfw_enabled = options.is_nsfw_enabled
+  const liked_posts = options.liked_posts
+  const is_blur_nsfw_enabled = options.is_blur_nsfw_enabled
 
-  // const searchParams = new URLSearchParams(
-  //   { is_nsfw: is_nsfw_enabled
-  //   , gif: is_gifs_enabled
-  //   , limit
-  //   }
-  // ).toString()
+  const timeout = JSON.parse(
+    cookies.get('timeout') ?? 'null'
+  ) as number | null
 
-  // const req = await fetch('https://api.waifu.im/search?'+ searchParams)
+  if (timeout &&
+    Date.now() < from_now(timeout)
+  ) {
+    console.log('cache hit')
+    return {
+      is_blur_nsfw_enabled,
+      liked_posts,
+      cache: 'hit'
+    } as ReturnType
+  }
 
-  // if (!req.ok) throw error(500, 'Cannot fetch from server')
+  const search_params = new URLSearchParams(
+    { limit: String(options.post_limit)
+    , is_nsfw: String(is_nsfw_enabled)
+    , gif: String(options.is_gifs_enabled)
+    }
+  ).toString()
 
-  // const res = await req.json()
-
-  // setHeaders({ 'cache-control': 'max-age=600' })
-
-  const liked_posts: number[] = JSON.parse(
-    cookies.get('liked_posts') ?? '[]'
+  const req = await fetch(
+    [api_url, search_params].join('?')
   )
-  const cookie_blur_nsfw = cookies.get('blur-nsfw')
-  const cookie_nsfw = cookies.get('enable-nsfw')
+  const res = await req.json()
 
-  const is_nsfw_enabled = cookie_nsfw == 'on' ? true : false
-  const is_blur_nsfw_enabled = cookie_blur_nsfw == 'on' ? true : false
-
-  const posts = waifus.images
-  .filter(
-    post => is_nsfw_enabled ? post : !post.is_nsfw
-  )
-  .slice(
-    0, +(cookies.get('post-limit') ?? 20)
-  )
+  const posts = res.images as Post[]
+  
+  console.log('cache miss')
+  cookies.set('timeout', String(from_now(300)), {
+    path: '/', expires: from_now(300, true)
+  })
 
   return {
     is_blur_nsfw_enabled,
     liked_posts,
-    posts
-  }
+    posts,
+    cache: 'miss'
+  } as ReturnType
 }

@@ -33,21 +33,10 @@ export const actions: Actions = {
   }
 }
 
-export const load: PageServerLoad = ({ cookies }) => {
-  const cookie_nsfw = cookies.get('enable-nsfw')
-  const cookie_blur_nsfw = cookies.get('blur-nsfw')
-  const cookie_gifs = cookies.get('enable-gifs')
-
-  const is_nsfw_enabled = cookie_nsfw == 'on' ? true : false
-  const is_blur_nsfw_enabled = cookie_blur_nsfw == 'on' ? true : false
-  const is_gifs_enabled = cookie_gifs == 'on' ? true : false
+export const load: PageServerLoad = async ({ parent }) => {
+  const options = await parent()
 
   return {
-    settings: {
-      is_gifs_enabled,
-      is_nsfw_enabled,
-      is_blur_nsfw_enabled,
-      post_limit: Number(cookies.get('post-limit') ?? 20)
-    }
+    options
   }
 }

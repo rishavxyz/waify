@@ -1,28 +1,32 @@
-export interface Post {
-	artist: {
-		artist_id: number,
-		name: string,
-		deviant_art?: string,
-		pixiv?: string,
-		twitter?: string,
-		patreon?: string
-	},
-	byte_size?: number,
-	dominant_color?: string,
-	extension?: string,
-	favorites?: number,
-	height?: number,
-	width?: number,
-	image_id: number,
-	is_nsfw: boolean,
-	source: string,
-	tags: {
-		tag_id: number,
-		name: string,
-		description: string,
-		is_nsfw: boolean
-	},
-	uploaded_at: string,
-	url: string
+export interface Data
+{ date: string
+; image_id: number
+; url: string
+; extension: string
+; source: string
+; is_nsfw: string
+; height: string
+; width: string
+; likes: string
+; byte_size: string
+; dominant_color: string
 }
 
+export interface Artist
+{ name: string
+; patreon?: string
+; pixiv?: string
+; twitter?: string
+; deviant_art?: string
+}
+
+export interface Tag
+{ tag_id: string
+; name: string
+; desc: string
+}
+
+export interface Post extends Data
+{ artist?: Artist
+; tags: Tag[]
+}

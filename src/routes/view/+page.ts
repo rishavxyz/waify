@@ -1,37 +1,6 @@
 import { fdate } from "$lib/utils/fdate";
 import type { PageLoad } from "./$types";
-
-interface Data
-{ date: string
-; id: string
-; url: string
-; extension: string
-; source: string
-; is_nsfw: string
-; height: string
-; width: string
-; likes: string
-; byte_size: string
-}
-
-interface Artist
-{ name: string
-; patreon?: string
-; pixiv?: string
-; twitter?: string
-; deviant_art?: string
-}
-
-interface Tag
-{ tag_id: string
-; name: string
-; desc: string
-}
-
-type Post = Data &
-{ artist?: Artist
-; tags: Tag[]
-}
+import type { Data, Post } from "$lib/types";
 
 export const load: PageLoad = async ({ url, parent }) => {
   const {
@@ -50,7 +19,7 @@ export const load: PageLoad = async ({ url, parent }) => {
     date: fdate(date)
   }
 
-  const layoutData = await parent()
+  const options = await parent()
 
-  return { post, layoutData }
+  return { post, options }
 };
