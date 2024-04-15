@@ -5,6 +5,8 @@
 	import Icon from '$lib/components/icon.svelte';
   import ButtonLike from '$lib/components/btn-like.svelte';
 	import Post from '$lib/components/post.svelte';
+	import GetPost from '$lib/components/get-post.svelte';
+	import ShowPost from '$lib/components/post.svelte';
 
   export let data
 
@@ -46,7 +48,7 @@
   </a>
 {/snippet}
 
-<figure class="-m-4 lg:m-0">
+<figure class="-m-4 lg:m-0" style:background-color={post.dominant_color}>
   <img src={post.url} alt="a beautiful waifu" />
 </figure>
 
@@ -81,7 +83,7 @@
   </div>
 
   <!-- tags -->
-  <div class="space-x-3">
+  <div class="flex flex-wrap gap-x-3 gap-y-1">
     {#each post.tags as tag}
       <a href="/" class="link no-underline">#{tag.name}</a>
     {/each}
@@ -144,15 +146,11 @@
   </div>
 </section>
 
-<!-- {#await fetch(`https://api.waifu.im/search?${searchParams.toString()}`)
-  .then(d => d.json())
-}
-  <Post placeholder animate posts={Array(5)} class="mt-4"
-    liked_posts={[]} blur_nsfw={false}
-  />
-{:then value}
-  <Post posts={value.images} class="mt-4"
-    liked_posts={data.options.liked_posts}
-    blur_nsfw={data.options.is_blur_nsfw_enabled}
-  />
-{/await} -->
+<p class="text-lg font-semibold mt-5">More like this</p>
+<GetPost let:posts
+  type="related"
+  search={params}
+  cache={data.cache}
+>
+  <ShowPost {posts} liked_posts={data.liked_posts} blur_nsfw={data.is_blur_nsfw_enabled} />
+</GetPost>

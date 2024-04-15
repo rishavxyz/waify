@@ -1,9 +1,7 @@
 import { type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-
 import type { Post } from "$lib/types";
 
-import waifus from '$lib/data.json'
 import { api_url } from "$lib";
 import { from_now } from "$lib/utils/from-now";
 
@@ -11,7 +9,7 @@ type ReturnType =  {
   is_blur_nsfw_enabled: boolean,
   liked_posts: number[],
   cache: 'hit'|'miss',
-  posts?: Post[],
+  posts: Post[],
 }
 
 export const actions: Actions = {
@@ -39,51 +37,26 @@ export const actions: Actions = {
 export const load: PageServerLoad = async ({
   parent, cookies, fetch
 }) => {
-
   const options = await parent()
   
-  const is_nsfw_enabled = options.is_nsfw_enabled
   const liked_posts = options.liked_posts
   const is_blur_nsfw_enabled = options.is_blur_nsfw_enabled
+  const cache = options.cache
 
-  const timeout = JSON.parse(
-    cookies.get('timeout') ?? 'null'
-  ) as number | null
+  if (cache == 'hit') return {
+    is_blur_nsfw_enabled,
+    liked_posts,
+    cache
+  } as ReturnType
 
-  if (timeout &&
-    Date.now() < from_now(timeout)
-  ) {
-    console.log('cache hit')
-    return {
-      is_blur_nsfw_enabled,
-      liked_posts,
-      cache: 'hit'
-    } as ReturnType
-  }
-
-  const search_params = new URLSearchParams(
-    { limit: String(options.post_limit)
-    , is_nsfw: String(is_nsfw_enabled)
-    , gif: String(options.is_gifs_enabled)
-    }
-  ).toString()
-
-  const req = await fetch(
-    [api_url, search_params].join('?')
-  )
-  const res = await req.json()
-
-  const posts = res.images as Post[]
-  
-  console.log('cache miss')
-  cookies.set('timeout', String(from_now(300)), {
-    path: '/', expires: from_now(300, true)
+  const ten_min = 9000
+  cookies.set('timeout', String(from_now(ten_min)), {
+    path: '/', expires: from_now(ten_min, true)
   })
 
   return {
     is_blur_nsfw_enabled,
     liked_posts,
-    posts,
-    cache: 'miss'
+    cache
   } as ReturnType
 }

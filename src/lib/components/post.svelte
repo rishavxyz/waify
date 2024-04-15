@@ -24,7 +24,17 @@
 </script>
 
 <section class="columns-2 lg:columns-3 [&>article]:break-inside-avoid {cls}">
-	{#if !placeholder}
+	{#if placeholder}
+		{#each posts as _}
+			<article class="mb-4 card" class:animate-pulse={animate}>
+				<div class="bg-base-100 h-52 lg:h-80" />
+				<div class="mt-3 self-end flex gap-x-2">
+					<div class="bg-base-100 p-2" />
+					<div class="bg-base-100 py-2 px-3" />
+				</div>
+			</article>
+		{/each}
+	{:else}
 		{#snippet post(image)}
 			{@const params = new URLSearchParams(
 				{ image_id: image.image_id
@@ -77,17 +87,7 @@
 				</article>
 			{/if}
 		{:else}
-			<p>Nothing to show</p>
-		{/each}
-	{:else}
-		{#each posts as _}
-			<article class="mb-4 card" class:animate-pulse={animate}>
-				<div class="bg-base-100 h-52 lg:h-80" />
-				<div class="mt-3 self-end flex gap-x-2">
-					<div class="bg-base-100 p-2" />
-					<div class="bg-base-100 py-2 px-3" />
-				</div>
-			</article>
+				<p class="opacity-75 text-center [column-span:all]">No posts to show</p>
 		{/each}
 	{/if}
 </section>

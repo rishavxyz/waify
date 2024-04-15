@@ -2,8 +2,10 @@
   import '../app.pcss'
   import 'iconify-icon'
 
-	import { page } from '$app/stores';
   import Icon from '$lib/components/icon.svelte';
+	import { fly } from 'svelte/transition';
+
+  export let data
 
   const links = [
     ['Home', '/', 'home'],
@@ -16,7 +18,7 @@
     menu menu-horizontal rounded-box [&>li>a]:text-lg"
   >
     {#each links as [name, href, icon]}
-      {@const active = $page.url.pathname == href}
+      {@const active = data.url == href}
 
       <li>
         <a {href} aria-label={name} class:active>
@@ -27,6 +29,11 @@
   </ul>
 </nav>
 
-<main class="max-w-4xl mx-auto p-4 mb-16 mb-40">
+{#key data.url}
+<main class="max-w-4xl mx-auto p-4 mb-40 min-h-screen"
+  in:fly={{ delay: 400, duration: 400, y: 50 }}
+  out:fly={{ duration: 400, y: -50 }}
+>
   <slot />
 </main>
+{/key}

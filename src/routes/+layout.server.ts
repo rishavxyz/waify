@@ -1,6 +1,8 @@
+import type { Options } from "$lib/types";
+import { from_now } from "$lib/utils/from-now";
 import type { LayoutServerLoad } from "./$types";
 
-export const load: LayoutServerLoad = ({ cookies }) => {
+export const load: LayoutServerLoad = ({ cookies, url }) => {
   const cookie_nsfw = cookies.get('enable-nsfw')
   const cookie_blur_nsfw = cookies.get('blur-nsfw')
   const cookie_force_nsfw = cookies.get('force-nsfw')
@@ -14,6 +16,9 @@ export const load: LayoutServerLoad = ({ cookies }) => {
   const liked_posts: number[] = JSON.parse(
     cookies.get('liked_posts') ?? '[]'
   )
+  const timeout: number = Number(cookies.get('timeout'))
+  const cache = !isNaN(timeout) && Date.now() < from_now(timeout)
+  ? 'hit' : 'miss'
 
   return {
     is_nsfw_enabled,
@@ -21,6 +26,9 @@ export const load: LayoutServerLoad = ({ cookies }) => {
     is_force_nsfw_enabled,
     is_gifs_enabled,
     post_limit,
-    liked_posts
-  }
+    liked_posts,
+    timeout,
+    cache,
+    url: url.pathname
+  } as Options
 }
