@@ -35,11 +35,13 @@
     <p class="text-lg font-semibold mt-5">Your saved posts</p>
     <GetPost let:posts
         type="saved"
-        ids={data.options.liked_posts}
-        search={{}}
+        search={{
+            included_files: data.options.liked_posts,
+            is_nsfw: null
+        }}
         cache={data.options.cache}
     >
-    <ShowPost {posts} liked_posts={data.options.liked_posts} blur_nsfw={data.options.is_blur_nsfw_enabled} />
+        <ShowPost {posts} liked_posts={data.options.liked_posts} blur_nsfw={data.options.is_blur_nsfw_enabled} />
     </GetPost>
 
 </section>

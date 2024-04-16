@@ -49,7 +49,7 @@ export const load: PageServerLoad = async ({
     cache
   } as ReturnType
 
-  const ten_min = 9000
+  const ten_min = 600 * 10
   cookies.set('timeout', String(from_now(ten_min)), {
     path: '/', expires: from_now(ten_min, true)
   })

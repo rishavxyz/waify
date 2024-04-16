@@ -4,9 +4,9 @@
   import { pretty_size } from '$lib/utils/pretty-size';
 	import Icon from '$lib/components/icon.svelte';
   import ButtonLike from '$lib/components/btn-like.svelte';
-	import Post from '$lib/components/post.svelte';
 	import GetPost from '$lib/components/get-post.svelte';
 	import ShowPost from '$lib/components/post.svelte';
+	import { page } from '$app/stores';
 
   export let data
 
@@ -18,22 +18,11 @@
 	$: is_liked = data.liked_posts.includes(+post.image_id)
 	$: likes = is_liked ? +post.likes + 1 : +post.likes
 
-  const params: Record<string, unknown> = {
-    tags: post.tags.map(tag => tag.name),
+  const params = {
+    included_tags: post.tags.map(tag => tag.name),
     is_nsfw: post.is_nsfw,
     limit: data.options.post_limit,
     excluded_files: post.image_id
-  }
-  const searchParams = new URLSearchParams()
-  
-  for (let key in params) {
-    if (Array.isArray(params[key])) {
-      const tags = params[key] as string[]
-      tags.forEach(tag => searchParams.append('included_tags', tag))
-    } else {
-      const value = String(params[key])
-      searchParams.set(key, value)
-    }
   }
 </script>
 
@@ -146,7 +135,7 @@
   </div>
 </section>
 
-<p class="text-lg font-semibold mt-5">More like this</p>
+<p class="text-lg font-semibold my-5">More like this</p>
 <GetPost let:posts
   type="related"
   search={params}
