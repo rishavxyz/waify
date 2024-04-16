@@ -32,16 +32,22 @@
         </div>
     </div>
 
-    <p class="text-lg font-semibold mt-5">Your saved posts</p>
-    <GetPost let:posts
-        type="saved"
-        search={{
-            included_files: data.options.liked_posts,
-            is_nsfw: null
-        }}
-        cache={data.options.cache}
-    >
-        <ShowPost {posts} liked_posts={data.options.liked_posts} blur_nsfw={data.options.is_blur_nsfw_enabled} />
-    </GetPost>
+    {#if data.options.liked_posts.length > 0}
+        <p class="text-lg font-semibold mt-5">Your liked posts</p>
+        <GetPost let:posts
+            type="saved"
+            search={{
+                included_files: data.options.liked_posts,
+                is_nsfw: null
+            }}
+            cache={data.options.cache}
+        >
+            <ShowPost {posts} liked_posts={data.options.liked_posts}
+                blur_nsfw={data.options.is_blur_nsfw_enabled}
+            />
+        </GetPost>
+    {:else}
+        <p class="text-center opacity-75 mt-5">Liked posts will show up here</p>
+    {/if}
 
 </section>

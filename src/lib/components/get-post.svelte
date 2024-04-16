@@ -59,63 +59,53 @@
 			)
 		}
 
-		const observer = new IntersectionObserver(entries => {
-			if (entries[0].isIntersecting) {
+		node.dispatchEvent(new Event('loading'))
 
-				node.dispatchEvent(new Event('loading'))
+		const cached_data: Post[] | null = JSON.parse(
+			localStorage.getItem(options.type) ?? 'null'
+		)
+		const ids: number[] = options.search.included_files
 
-				const cached_data: Post[] | null = JSON.parse(
-					localStorage.getItem(options.type) ?? 'null'
-				)
-				const ids: number[] = options.search.included_files
+		if (options.cache == 'hit' && cached_data) {
+			/**
+			 * Below validates if the liked_post cookie has
+			 * been changed and the old data is still stored
+			 * in the localStorage.
+			 * 
+			 * REASON: Data are stored for 10 minutes and
+			 * within 10 minutes if the user likes/dislikes
+			 * one or multiple post/s then we don't want to
+			 * return the old saved data as there is a chnage.
+			*/
+			if (options.type == 'saved' && cached_data.length != ids.length) {
+				localStorage.removeItem('saved')
+				fetch_and_serve()
+			} else if (options.type == 'related') {
+				const related_id = localStorage.getItem('related-id')
 
-				if (options.cache == 'hit' && cached_data) {
-					/**
-					 * Below validates if the liked_post cookie has
-					 * been changed and the old data is still stored
-					 * in the localStorage.
-					 * 
-					 * REASON: Data are stored for 10 minutes and
-					 * within 10 minutes if the user likes/dislikes
-					 * one or multiple post/s then we don't want to
-					 * return the old saved data as there is a chnage.
-					*/
-					if (options.type == 'saved' && cached_data.length != ids.length) {
-						localStorage.removeItem('saved')
-						fetch_and_serve()
-					} else if (options.type == 'related') {
-						const related_id = localStorage.getItem('related-id')
-
-						if (related_id != $page.params.image_id) {
-							localStorage.removeItem('related')
-							fetch_and_serve()
-						} else {
-							posts = cached_data
-							node.dispatchEvent(new CustomEvent('loaded',{ detail:cached_data }))
-						}
-					} else {
-						posts = cached_data
-						node.dispatchEvent(new CustomEvent('loaded',{ detail:cached_data }))
-					}
-				} else {
-					if (cached_data) {
-						/**
-						 * because cookie will be deleted after
-						 * 10 min but storage data won't 
-						 */ 
-						localStorage.removeItem(options.type)
-					}
-					if (options.type == 'related') {
-						localStorage.setItem('related-id', $page.params.image_id)
-					}
+				if (related_id != $page.params.image_id) {
+					localStorage.removeItem('related')
 					fetch_and_serve()
+				} else {
+					posts = cached_data
+					node.dispatchEvent(new CustomEvent('loaded',{ detail:cached_data }))
 				}
-			} else return
-		})
-		observer.observe(node)
-
-		return {
-			destroy: ()=> observer.disconnect()
+			} else {
+				posts = cached_data
+				node.dispatchEvent(new CustomEvent('loaded',{ detail:cached_data }))
+			}
+		} else {
+			if (cached_data) {
+				/**
+					* because cookie will be deleted after
+					* 10 min but storage data won't 
+					*/ 
+				localStorage.removeItem(options.type)
+			}
+			if (options.type == 'related') {
+				localStorage.setItem('related-id', $page.params.image_id)
+			}
+			fetch_and_serve()
 		}
 	}
 
