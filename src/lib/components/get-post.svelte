@@ -84,7 +84,7 @@
 				const related_id = localStorage.getItem('related-id')
 
 				if (related_id != $page.params.image_id) {
-					localStorage.removeItem('related')
+					localStorage.setItem('related-id', $page.params.image_id)
 					fetch_and_serve()
 				} else {
 					posts = cached_data
