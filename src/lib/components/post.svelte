@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { Post } from '$lib/types';
+	import { fdate } from '$lib/utils/fdate';
 	import { lazy_image_loading } from '$lib/utils/lazy-image-loading';
   import ButtonLike from './btn-like.svelte'
 
   interface Props
-  { liked_posts: number[]
+  { loved_posts: {id: string, at:number}[]
 	; blur_nsfw: boolean
 	; posts: Post[] | null
 	; placeholder?: number
@@ -12,17 +13,36 @@
 	; classChild?: string
 	; overrideClass?: boolean
 	; landscape?: boolean
+	; type?: string
   }
 
   let {
-    liked_posts,
+    loved_posts,
     blur_nsfw,
     posts,
 		placeholder = 10,
     class: cls,
 		classChild,
-		landscape = false
+		landscape = false,
+		type
 	}: Props = $props()
+
+	function posts_to_sorted(posts: Post[]) {
+		if (type != 'saved') return posts
+
+			let post_id_to_date: any = {}
+
+			loved_posts.forEach(post =>
+				post_id_to_date[post.id] = post.at
+			)
+
+			return posts.toSorted((fst, snd) => {
+				const fst_date = post_id_to_date[fst.image_id]
+				const snd_date = post_id_to_date[snd.image_id]
+
+				return snd_date - fst_date
+			})
+	}
 </script>
 
 <section class="columns-2 lg:columns-3 [&>article]:break-inside-avoid {cls}">
@@ -40,23 +60,23 @@
 	{:else}
 		{#snippet post(image)}
 			{@const params = new URLSearchParams(
-				{ image_id: image.image_id
-				, url: image.url
+				{ url: image.url
 				, source: image.source
 				,	artist: JSON.stringify(image.artist)
-				,	date: image.uploaded_at
+				,	date: image.date
 				, tags: JSON.stringify(image.tags)
 				, background_color: image.dominant_color
 				, extension: image.extension
 				, height: image.height
 				, width: image.width
 				, is_nsfw: image.is_nsfw
-				, likes: image.favorites
+				, loves: image.loves
+				, loved_at: image.loved_at
 				, byte_size: image.byte_size
 				}).toString()
 			}
-			{@const is_liked = liked_posts.includes(image.image_id)}
-			{@const likes = is_liked ? image.favorites + 1 : image.favorites}
+			{@const is_loved = loved_posts.some(post_ => post_.id == image.image_id)}
+			{@const loves = is_loved ? +image.loves + 1 : +image.loves}
 
 			<a href="/{image.image_id}?{params}">
 				<figure class="h-52 lg:h-80" style:background-color={image.dominant_color}
@@ -73,10 +93,10 @@
 				/>
 			</a>
 
-			<ButtonLike id={image.image_id} {is_liked} {likes} />
+			<ButtonLike id={image.image_id} {is_loved} {loves} />
 		{/snippet}
 
-		{#each posts as image (image.image_id)}
+		{#each posts_to_sorted(posts) as image (image.image_id)}
 			{@const is_landscape = landscape || image.width > image.height}
 			{@const is_very_tall = landscape ? false : +image.width * 1.8 < +image.height}
 

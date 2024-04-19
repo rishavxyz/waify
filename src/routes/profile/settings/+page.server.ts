@@ -37,9 +37,5 @@ export const actions: Actions = {
 }
 
 export const load: PageServerLoad = async ({ parent }) => {
-  const options = await parent()
-
-  return {
-    options
-  }
+  return await parent()
 }

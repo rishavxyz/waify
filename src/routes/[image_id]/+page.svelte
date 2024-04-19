@@ -2,26 +2,24 @@
   import { click_to_download } from '$lib/utils/click-to-download';
 	import { delay } from '$lib/utils/delay';
   import { pretty_size } from '$lib/utils/pretty-size';
-	import Icon from '$lib/components/icon.svelte';
+	import Icon from '$lib/components/ico.svelte';
   import ButtonLike from '$lib/components/btn-like.svelte';
 	import GetPost from '$lib/components/get-post.svelte';
 	import ShowPost from '$lib/components/post.svelte';
-	import { page } from '$app/stores';
 
   export let data
-
   const { post } = data
 
   let loading = false
   let downloaded: 'no' | 'yes' | 'failed' = 'no'
 
-	$: is_liked = data.liked_posts.includes(+post.image_id)
-	$: likes = is_liked ? +post.likes + 1 : +post.likes
+	$: is_loved = data.loved_posts.includes(+post.image_id)
+	$: loves = is_loved ? +post.loves + 1 : +post.loves
 
   const params = {
     included_tags: post.tags.map(tag => tag.name),
     is_nsfw: post.is_nsfw,
-    limit: data.options.post_limit,
+    limit: data.post_limit,
     excluded_files: post.image_id
   }
 </script>
@@ -33,7 +31,7 @@
     rel="noopener noreferrer"
     class="text-2xl"
   >
-    <Icon iconSet="simple-icons" {icon} />
+    <Icon name={icon} />
   </a>
 {/snippet}
 
@@ -44,9 +42,9 @@
 <section class="relative mt-12 space-y-5 bg-base-100 p-4 rounded-box">
   <!-- like btn -->
   <ButtonLike
-    class="btn btn-accent !text-2xl flex-row-reverse"
+    class="btn btn-accent flex-row-reverse"
     class_form="absolute -top-4 right-0"
-    id={post.image_id} {is_liked} {likes}
+    id={post.image_id} {is_loved} {loves}
   />
 
   <!-- artist -->
@@ -97,7 +95,7 @@
       <p class="mb-1 text-sm opacity-75">Size</p>
       <p>{pretty_size(post.byte_size)}</p>
     </div>
-    <button class="btn btn-circle text-2xl ms-auto"
+    <button class="btn btn-circle ms-auto"
       class:btn-primary={downloaded == 'no'}
       class:btn-success={downloaded == 'yes'}
       class:btn-error={downloaded == 'failed'}
@@ -127,9 +125,9 @@
     >{#if loading}
         <span class="loading loading-spinner" />
       {:else if downloaded == 'yes'}
-        <Icon icon="check-circle-1" />
+        <Icon name="check" />
       {:else}
-        <Icon icon="upload" />
+        <Icon name="download" />
       {/if}
     </button>
   </div>
@@ -141,5 +139,7 @@
   search={params}
   cache={data.cache}
 >
-  <ShowPost {posts} liked_posts={data.liked_posts} blur_nsfw={data.is_blur_nsfw_enabled} />
+  <ShowPost {posts} loved_posts={data.loved_posts}
+    blur_nsfw={data.is_blur_nsfw_enabled}
+  />
 </GetPost>

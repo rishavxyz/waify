@@ -1,62 +1,35 @@
-import { type Actions } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
-import type { Post } from "$lib/types";
-
-import { api_url } from "$lib";
 import { from_now } from "$lib/utils/from-now";
+import type { Actions } from "./$types";
 
-type ReturnType =  {
-  is_blur_nsfw_enabled: boolean,
-  liked_posts: number[],
-  cache: 'hit'|'miss',
-  posts: Post[],
+type Post = {
+  id: string, at: number
 }
 
 export const actions: Actions = {
-  async likePost({ cookies, url }) {
-    const image_id = url.searchParams.get('id')! as string
+  async loved_post({ cookies, url }) {
+    const image_id = url.searchParams.get('id') as string
 
-    const liked_posts: number[] = JSON.parse(
-      cookies.get('liked_posts') ?? '[]'
+    const loved_posts: Post[] = JSON.parse(
+      cookies.get('loved_posts') ?? '[]'
     )
 
-    let ids: number[] = []
+    let loved_posts_new: Post[] = []
+    const post: Post = {
+      id: image_id,
+      at: from_now()
+    }
 
-    if (liked_posts.includes(+image_id)
-    ) ids = liked_posts.filter(id => id != +image_id)
-    else ids = [...liked_posts, +image_id]
+    if (loved_posts.some(post_ => post_.id == image_id)) {
+      loved_posts_new = loved_posts.filter(post_ => post_.id != image_id)
+    } else {
+      loved_posts_new = [...loved_posts, post]
+    }
 
     cookies.set
-    ( 'liked_posts'
-    , JSON.stringify(ids)
+    ( 'loved_posts'
+    , JSON.stringify(loved_posts_new)
     , { path: '/', expires: new Date('2050') }
     )
   }
 }
 
-export const load: PageServerLoad = async ({
-  parent, cookies, fetch
-}) => {
-  const options = await parent()
-  
-  const liked_posts = options.liked_posts
-  const is_blur_nsfw_enabled = options.is_blur_nsfw_enabled
-  const cache = options.cache
-
-  if (cache == 'hit') return {
-    is_blur_nsfw_enabled,
-    liked_posts,
-    cache
-  } as ReturnType
-
-  const ten_min = 600 * 10
-  cookies.set('timeout', String(from_now(ten_min)), {
-    path: '/', expires: from_now(ten_min, true)
-  })
-
-  return {
-    is_blur_nsfw_enabled,
-    liked_posts,
-    cache
-  } as ReturnType
-}

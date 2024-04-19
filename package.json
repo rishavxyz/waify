@@ -39,7 +39,8 @@
   },
   "type": "module",
   "dependencies": {
-    "iconify-icon": "^2.0.0"
+    "iconify-icon": "^2.0.0",
+    "tailwind-merge": "^2.3.0"
   },
   "trustedDependencies": [
     "svelte-preprocess"

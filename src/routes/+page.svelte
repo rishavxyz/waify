@@ -18,11 +18,14 @@
 >
 	<ShowPost {posts}
 		blur_nsfw={data.is_blur_nsfw_enabled}
-		liked_posts={data.liked_posts}
+		loved_posts={data.loved_posts}
 	/>
 </GetPost>
 
-<p class="my-5 text-lg font-semibold">Widescreens</p>
+<div class="my-5 space-y-1">
+	<p class="text-lg font-semibold">Widescreens</p>
+	<p class="text-sm opacity-75">Perfect for desktop wallpapers</p>
+</div>
 <GetPost let:posts
 	cache={data.cache}
 	search={{
@@ -37,6 +40,6 @@
 >
 	<ShowPost landscape
 		{posts} blur_nsfw={data.is_blur_nsfw_enabled}
-		liked_posts={data.liked_posts}
+		loved_posts={data.loved_posts}
 	/>
 </GetPost>

@@ -1,5 +1,7 @@
+import icons from './icon.json'
+
 export interface Data
-{ date: string
+{ date: number|string
 ; image_id: number
 ; url: string
 ; extension: string
@@ -7,7 +9,8 @@ export interface Data
 ; is_nsfw: string
 ; height: string
 ; width: string
-; likes: string
+; loves: number
+; loved_at: number|null
 ; byte_size: string
 ; dominant_color: string
 }
@@ -37,8 +40,10 @@ export interface Options
 ; is_force_nsfw_enabled: boolean
 ; is_gifs_enabled: boolean
 ; post_limit: number
-; liked_posts: number[]
+; loved_posts: {id: string, at:number}[]
 ; timeout: number
 ; cache: 'hit'|'miss'
 ; url: string
 }
+
+export type IconName = keyof typeof icons

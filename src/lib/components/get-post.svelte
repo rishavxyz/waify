@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import { api_url } from '$lib';
 	import type {Post} from '$lib/types.js'
+	import { from_now } from '$lib/utils/from-now';
 	import { createEventDispatcher } from 'svelte';
 	import type { Action } from 'svelte/action';
 
@@ -44,12 +45,29 @@
 				} else search_params.set(key, params[key])
 			}
 
-			fetch(api_url + '?' + search_params)
+			const is_cached = options.cache == 'hit'
+
+			fetch(api_url + '?' + search_params, {
+				cache: is_cached ? 'force-cache' : 'default'
+			})
 			.then(res => res.json())
-			.then((data: { images: Post[] }) => {
-				posts = data.images
-				node.dispatchEvent(new CustomEvent('loaded', { detail: data.images }))
-				localStorage.setItem(options.type, JSON.stringify(data.images ?? null))
+			.then((data: { images: any[] }) => {
+				const _posts: Post[] = data.images.map(post => {
+					const {
+						byte_size, uploaded_at, dominant_color, extension, height,
+						image_id, is_nsfw, favorites, source, tags, url, width,
+						artist
+					} = post
+
+					return { // from_now() so it will take 13 chars, SAVES SPACE
+						byte_size, date: from_now(uploaded_at), dominant_color, extension, height,
+						image_id, is_nsfw, loves: favorites, source, tags, url, width,
+						artist, loved_at: null
+					}
+				})
+				posts = _posts
+				node.dispatchEvent(new CustomEvent('loaded', { detail: _posts }))
+				localStorage.setItem(options.type, JSON.stringify(_posts ?? null))
 			})
 			.catch(error =>
 				node.dispatchEvent(new CustomEvent('error', { detail: error }))
@@ -81,6 +99,10 @@
 				localStorage.removeItem('saved')
 				fetch_and_serve()
 			} else if (options.type == 'related') {
+				/**
+				 * This check is because if the image_id changes
+				 * then we don't want to load from cache
+				 */
 				const related_id = localStorage.getItem('related-id')
 
 				if (related_id != $page.params.image_id) {
