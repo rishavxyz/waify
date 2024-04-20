@@ -12,7 +12,7 @@
 	type Options = {
 		cache: 'hit'|'miss',
 		search: any,
-		type: 'posts'|'wide'|'related'|'saved'
+		type: 'posts'|'wide'|'related'|'saved'|'tag'
 	}
 
 	const get_posts: Action<
@@ -84,7 +84,10 @@
 		)
 		const ids: number[] = options.search.included_files
 
-		if (options.cache == 'hit' && cached_data) {
+		/**
+		 * tag will change frequently so don't need to cache it
+		*/
+		if (options.cache == 'hit' && options.type != 'tag' && cached_data) {
 			/**
 			 * Below validates if the liked_post cookie has
 			 * been changed and the old data is still stored
@@ -145,7 +148,7 @@
 	const dispatch = createEventDispatcher()
 </script>
 
-<div aria-hidden="true"
+<div hidden aria-hidden="true"
 	use:get_posts={{
 		cache, search, type
 	}}

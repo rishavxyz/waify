@@ -6,28 +6,28 @@
     export let data;
     export let form
 
-    $: limit_value = data.options.post_limit
+    $: limit_value = data.post_limit
     $: changes_saved = form?.success
 
     $: switches = [
         { title: 'Enable NSFW'
         , desc: `Enabling this you are confirming that you are over 18 years old. May contain aggressive or abusing content.`
-        , input: { name: 'enable-nsfw', on: data.options.is_nsfw_enabled }
+        , input: { name: 'enable-nsfw', on: data.is_nsfw_enabled }
         , disabled: false
         },
         { title: 'Blur NSFW images'
         , desc: `Blur all NSFW tagged images only on the feed. Vsible on other pages.`
-        , input: { name: 'blur-nsfw', on: data.options.is_blur_nsfw_enabled }
-        , disabled: !data.options.is_nsfw_enabled
+        , input: { name: 'blur-nsfw', on: data.is_blur_nsfw_enabled }
+        , disabled: !data.is_nsfw_enabled
         },
         { title: 'Only NSFW mode'
         , desc: `Only show NSFW tagged images. Some non-NSFW images may still be visible.`
-        , input: { name: 'force-nsfw', on: data.options.is_force_nsfw_enabled }
-        , disabled: !data.options.is_nsfw_enabled
+        , input: { name: 'force-nsfw', on: data.is_force_nsfw_enabled }
+        , disabled: !data.is_nsfw_enabled
         },
         { title: 'Force GIFs'
         , desc: `Mainly show GIFs along with some still images.`
-        , input: { name: 'enable-gifs', on: data.options.is_gifs_enabled }
+        , input: { name: 'enable-gifs', on: data.is_gifs_enabled }
         , disabled: false
         },
     ]

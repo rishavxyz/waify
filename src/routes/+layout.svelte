@@ -22,7 +22,7 @@
       {@const active = data.url == href}
 
       <li>
-        <a {href} aria-label={name} class:active>
+        <a {href} aria-label={name} title={name} class:active>
           <Icon name={icon} width={20} fill={active} />
         </a>
       </li>

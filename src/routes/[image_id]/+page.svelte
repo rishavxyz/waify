@@ -13,7 +13,7 @@
   let loading = false
   let downloaded: 'no' | 'yes' | 'failed' = 'no'
 
-	$: is_loved = data.loved_posts.includes(+post.image_id)
+	$: is_loved = data.loved_posts.some(post_ => +post_.id == post.image_id)
 	$: loves = is_loved ? +post.loves + 1 : +post.loves
 
   const params = {
@@ -72,7 +72,7 @@
   <!-- tags -->
   <div class="flex flex-wrap gap-x-3 gap-y-1">
     {#each post.tags as tag}
-      <a href="/" class="link no-underline">#{tag.name}</a>
+      <a href="/tags/{tag.name}" class="link no-underline">#{tag.name}</a>
     {/each}
   </div>
 
