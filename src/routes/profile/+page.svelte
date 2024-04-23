@@ -22,7 +22,7 @@
         </div>
     </div> 
     <div class="space-y-0.5">
-        <p class="text-lg font-semibold">Hello, Rishav!</p>
+        <p class="text-lg font-semibold">Hello, Anonymous!</p>
         <p class="text-sm opacity-75">How are you doing my friend?</p>
         <div class="!mt-2 flex gap-3 opacity-75">
             <a href="#_">Edit</a>

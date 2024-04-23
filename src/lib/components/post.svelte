@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { disable_post } from '$lib';
 	import type { Post } from '$lib/types';
 	import { fdate } from '$lib/utils/fdate';
 	import { lazy_image_loading } from '$lib/utils/lazy-image-loading';
@@ -79,19 +80,22 @@
 			{@const loves = is_loved ? +image.loves + 1 : +image.loves}
 
 			<a href="/{image.image_id}?{params}">
-				<!-- <figure class="h-52 lg:h-80" style:background-color={image.dominant_color} /> -->
-				<figure class="h-52 lg:h-80" style:background-color={image.dominant_color}
-					use:lazy_image_loading={{ src: image.url }}
-					on:image_loaded={node => {
-						node.target.classList.remove('h-52', 'lg:h-80')
-						if (blur_nsfw) {
-							if (image.is_nsfw)
-							node.detail.style.filter = 'blur(2rem)'
-						}
-						node.detail.draggable = false
-						node.detail.alt = ''
-					}}
-				/>
+				{#if disable_post}
+					<figure class="h-52 lg:h-80" style:background-color={image.dominant_color} />
+				{:else}
+					<figure class="h-52 lg:h-80" style:background-color={image.dominant_color}
+						use:lazy_image_loading={{ src: image.url }}
+						on:image_loaded={node => {
+							node.target.classList.remove('h-52', 'lg:h-80')
+							if (blur_nsfw) {
+								if (image.is_nsfw)
+								node.detail.style.filter = 'blur(2rem)'
+							}
+							node.detail.draggable = false
+							node.detail.alt = ''
+						}}
+					/>
+				{/if}
 			</a>
 
 			<ButtonLike id={image.image_id} {is_loved} {loves} />

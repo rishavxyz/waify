@@ -3,40 +3,59 @@
     
     export let data: PageData;
 
-    const tags = {
-        "versatile": [
-            "maid",
-            "waifu",
-            "marin-kitagawa",
-            "mori-calliope",
-            "raiden-shogun",
-            "oppai",
-            "selfies",
-            "uniform",
-            "kamisato-ayaka"
-        ],
-        "nsfw": [
-            "ass",
-            "hentai",
-            "milf",
-            "oral",
-            "paizuri",
-            "ecchi",
-            "ero"
-        ]
-    }
+    const _tags = [
+        {
+            name: 'waifu',
+            desc: 'A female anime/manga character'
+        },
+        {
+            name: 'maid',
+            desc: 'Cute womans or girl employed to do domestic work in their working uniform'
+        },
+        {
+            name: 'oppai',
+            desc: 'Girls with large breasts'
+        },
+        {
+            name: 'selfies',
+            desc: 'A photo-like image of a waifu'
+        },
+        {
+            name: 'uniform',
+            desc: 'Girls wearing any kind of uniform, cosplay etc...'
+        },
+        {
+            name: 'marin kitagawa',
+            desc: 'One of two main protagonists (alongside Wakana Gojo) in the anime and manga series My Dress-Up Darling'
+        },
+        {
+            name: 'mori calliope',
+            desc: 'An English Virtual YouTuber (VTuber) associated with hololive as part of its first-generation English branch of Vtubers'
+        },
+        {
+            name: 'raiden-shogun',
+            desc: 'Genshin Impact\'s Raiden Shogun is a fierce lady in the Genshin ranks'
+        },
+        {
+            name: 'kamisato-ayaka',
+            desc: 'A playable Cryo character in Genshin Impact'
+        }
+    ]
 </script>
 
-<p class="text-lg font-semibold my-5">Most searched tags</p>
+<p class="text-lg font-semibold mb-5">Most searched tags</p>
 
-<section class="grid grid-cols-2 gap-2">
-    {#if data.is_nsfw_enabled}
-        {#each tags['nsfw'] as tag}
-            <a href="/tags/{tag}" class="btn capitalize">{tag}</a>
-        {/each}
-    {/if}
-    {#each tags['versatile'] as tag}
-        <a href="/tags/{tag}" class="btn capitalize">{tag}</a>
+<section class="grid gap-4 lg:grid-cols-2">
+    {#each _tags as tag}
+        {@const href = '/tags/' + tag.name.replace(' ', '-')}
+        <a {href} title={tag.name}>
+            <div class="card bg-base-100 aspect-video">
+                <div class="card-body">
+                    <p class="card-title capitalize">{tag.name}</p>
+                    <p class="text-balance opacity-75">{tag.desc}.</p>
+                </div>
+            </div>
+        </a>
     {/each}
 </section>
 
