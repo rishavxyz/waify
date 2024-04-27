@@ -48,8 +48,9 @@
 <section class="grid gap-4 lg:grid-cols-2">
     {#each _tags as tag}
         {@const href = '/tags/' + tag.name.replace(' ', '-')}
+
         <a {href} title={tag.name}>
-            <div class="card bg-base-100 aspect-video">
+            <div class="card bg-gradient-to-br from-pink-800 to-primary/50 aspect-video">
                 <div class="card-body">
                     <p class="card-title capitalize">{tag.name}</p>
                     <p class="text-balance opacity-75">{tag.desc}.</p>

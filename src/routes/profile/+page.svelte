@@ -25,7 +25,7 @@
         <p class="text-lg font-semibold">Hello, Anonymous!</p>
         <p class="text-sm opacity-75">How are you doing my friend?</p>
         <div class="!mt-2 flex gap-3 opacity-75">
-            <a href="#_">Edit</a>
+            <a href="/error?reason=Currently working on this">Edit</a>
             <a href="/profile/settings">Settings</a>
         </div>
     </div>
