@@ -26,8 +26,8 @@
   <meta property="og:site_name" content="Waify" />
   <meta property="og:image" content={waify} />
   <meta property="og:image:type" content="image/jpeg" />
-  <meta property="og:image:width" content="400" />
-  <meta property="og:image:height" content="300" />
+  <meta property="og:image:width" content="2000" />
+  <meta property="og:image:height" content="1500" />
   <meta property="og:image:alt" content="A beautiful waifu with green eyes under a tree" />
 </svelte:head>
 
