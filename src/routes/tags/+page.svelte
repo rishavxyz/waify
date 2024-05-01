@@ -1,7 +1,5 @@
 <script lang="ts">
-    import type { PageData } from './$types';
-    
-    export let data: PageData;
+	import { title } from "$lib/writable/title";
 
     const _tags = [
         {
@@ -41,6 +39,7 @@
             desc: 'A playable Cryo character in Genshin Impact'
         }
     ]
+    title.set('Tags - Find the perfect waifu')
 </script>
 
 <p class="text-lg font-semibold mb-5">Most searched tags</p>
@@ -53,7 +52,7 @@
             <div class="card bg-gradient-to-br from-pink-800 to-primary/50 aspect-video">
                 <div class="card-body">
                     <p class="card-title capitalize">{tag.name}</p>
-                    <p class="text-balance opacity-75">{tag.desc}.</p>
+                    <p class="text-balance">{tag.desc}.</p>
                 </div>
             </div>
         </a>

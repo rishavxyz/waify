@@ -1,9 +1,17 @@
 <script lang="ts">
 	import GetPost from '$lib/components/get-post.svelte';
 	import ShowPost from '$lib/components/post.svelte';
+	import { title } from '$lib/writable/title.js';
 
 	export let data
+
+	title.set(`Waifu lovers' home`)
 </script>
+
+<div class="mb-5">
+    <h1 class="text-3xl font-semibold">Waify</h1>
+    <p class="mt-2 opacity-75">Let your wet dreams come true</p>
+</div>
 
 <GetPost let:posts
 	cache={data.cache}

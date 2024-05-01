@@ -6,6 +6,7 @@
   import ButtonLike from '$lib/components/btn-like.svelte';
 	import GetPost from '$lib/components/get-post.svelte';
 	import ShowPost from '$lib/components/post.svelte';
+	import { title } from '$lib/writable/title.js';
 
   export let data
   const { post } = data
@@ -22,6 +23,8 @@
     limit: data.post_limit,
     excluded_files: post.image_id
   }
+
+  title.set('Preview')
 </script>
 
 {#snippet social_link(url, name)}

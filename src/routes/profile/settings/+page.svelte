@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 	import { delay } from "$lib/utils/delay";
+	import { title } from "$lib/writable/title.js";
 	import { slide } from "svelte/transition";
 
-    export let data;
+    export let data
     export let form
+
+    title.set('Settings')
 
     $: limit_value = data.post_limit
     $: changes_saved = form?.success

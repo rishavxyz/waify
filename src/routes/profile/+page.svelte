@@ -1,8 +1,11 @@
 <script lang="ts">
     import GetPost from "$lib/components/get-post.svelte";
 	import ShowPost from "$lib/components/post.svelte";
+	import { title } from "$lib/writable/title.js";
 
     export let data
+
+    title.set('Profile')
 </script>
 
 <div>
@@ -32,7 +35,7 @@
 </div>
 
 {#if data.loved_posts.length > 0}
-    <p class="text-lg font-semibold mt-5">Posts you loved</p>
+    <p class="text-lg font-semibold my-5">Posts you loved</p>
     <GetPost let:posts
         type="saved"
         search={{

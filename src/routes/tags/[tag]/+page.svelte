@@ -1,9 +1,12 @@
 <script lang="ts">
 	import GetPost from '$lib/components/get-post.svelte';
 	import ShowPost from '$lib/components/post.svelte';
+	import { title } from '$lib/writable/title';
     import type { PageData } from './$types';
     
     export let data: PageData;
+
+		title.set(`Posts tagged with "${data.tag}"`)
 </script>
 
 <p class="my-5 text-lg font-semibold capitalize">{data.tag}</p>

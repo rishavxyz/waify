@@ -2,8 +2,10 @@
   import '../app.pcss'
 
   import Icon from '$lib/components/ico.svelte';
-	import { fly, scale } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import type { IconName } from '$lib/types';
+  import waify from '$lib/waify.jpg'
+	import { title } from '$lib/writable/title';
 
   export let data
 
@@ -13,6 +15,18 @@
     ['Profile', '/profile', 'user'],
   ]
 </script>
+
+<svelte:head>
+  <title>{`Waify | ${$title}`}</title>
+  <meta name="description" content="Waify is a anime waifu browsing platform, curated pictures uploaded by users, provided by waifu.im." />
+  <meta name="og:description" content="Waify is a anime waifu browsing platform, curated pictures uploaded by users, provided by waifu.im." />
+  <meta property="og:site_name" content="Waify" />
+  <meta property="og:image" content={waify} />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="400" />
+  <meta property="og:image:height" content="300" />
+  <meta property="og:image:alt" content="A beautiful waifu with green eyes under a tree" />
+</svelte:head>
 
 <nav class="fixed bottom-4 right-4 z-50">
   <ul class="space-x-1 bg-base-200 shadow
