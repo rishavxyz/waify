@@ -6,7 +6,7 @@
 	import type { IconName } from '$lib/types';
   import waify from '$lib/waify.jpg'
 	import { title } from '$lib/writable/title';
-
+  
   export let data
 
   const links: Array<[string, string, IconName]> = [
@@ -18,8 +18,11 @@
 
 <svelte:head>
   <title>{`Waify | ${$title}`}</title>
+  <meta name="title" content={`Waify | ${$title}`} />
   <meta name="description" content="Waify is a anime waifu browsing platform, curated pictures uploaded by users, provided by waifu.im." />
-  <meta name="og:description" content="Waify is a anime waifu browsing platform, curated pictures uploaded by users, provided by waifu.im." />
+  <meta property="og:description" content="Waify is a anime waifu browsing platform, curated pictures uploaded by users, provided by waifu.im." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://waify.vercel.app/" />
   <meta property="og:site_name" content="Waify" />
   <meta property="og:image" content={waify} />
   <meta property="og:image:type" content="image/jpeg" />
